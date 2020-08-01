@@ -1,23 +1,20 @@
 {
-  "name": "server",
+  "name": "queue-system-server",
   "version": "1.0.0",
-  "description": "Starguides Server App version 3.0",
-  "author": "PT. Jiwa Muda Sejahtera",
-  "main": "index.js",
+  "private": true,
   "scripts": {
-    "start": "nodemon config/app.js",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "start": "node ./bin/www"
   },
-  "keywords": [],
-  "license": "ISC",
   "dependencies": {
     "async": "^3.1.0",
     "axios": "^0.19.2",
     "bcryptjs": "^2.4.3",
     "body-parser": "^1.18.3",
+    "cookie-parser": "~1.4.4",
     "connect-busboy": "0.0.2",
     "cors": "^2.8.5",
     "crypto-js": "^4.0.0",
+    "debug": "~2.6.9",
     "ecb-exchange-rates": "0.0.7",
     "ejs": "^2.7.4",
     "email-templates": "^6.0.0",
@@ -26,6 +23,7 @@
     "express-session": "^1.16.1",
     "express-validator": "^5.3.1",
     "flatry": "^1.0.12",
+    "http-errors": "~1.6.3",
     "jsonwebtoken": "^8.5.1",
     "midtrans-client": "^1.0.3",
     "moment": "^2.24.0",
@@ -42,7 +40,7 @@
     "passport-local": "^1.0.0",
     "password-validator": "^4.1.1",
     "path": "^0.12.7",
-    "pug": "^2.0.3",
+    "pug": "2.0.0-beta11",
     "twilio": "^3.31.1",
     "uuid": "^3.3.2"
   }

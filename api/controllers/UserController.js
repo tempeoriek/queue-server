@@ -5,7 +5,8 @@ let User = require('../models/user'),
 
 UserController = {
   checkUserVip: async function (email, password, is_vip) {
-    return new Promise(async (resolve, reject) => {
+    let find_user = await UserController.checkUserApi(email, password);
+    return new Promise((resolve, reject) => {
       let obj = {
         user: null, 
         other_date: false,
@@ -13,7 +14,6 @@ UserController = {
       }, user = null;
     
       //FIND IN API 
-      let find_user = await UserController.checkUserApi(email, password);
       Promise.all([find_user])
       .then(async (data) => {
         if (data[0].data) {
@@ -98,7 +98,7 @@ UserController = {
   },
 
   checkUserApi: function (email, password) {
-    return new Promise(async (resolve, reject) => {
+    return new Promise((resolve, reject) => {
     
       let obj = {
         data: null,
