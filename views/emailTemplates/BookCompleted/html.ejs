@@ -121,7 +121,7 @@
 <body>
   <div class="container">
     <div class="container-header">
-      <img src="file:///home/tempeoriek/workspave/queue/server/files/header.png" width="300" height="350">
+      <img src="https://queueserver.azurewebsites.net/files/header.png" width="300" height="350">
     </div>
     <div class="container-body cb">
       <div>
@@ -132,16 +132,17 @@
 
       <div class="number-order body-text cb">
         <p>Your queue number</p>
-        <p class="number-text">#20010</p>
+        <p class="number-text"><%=queue_number%></p>
       </div>
 
       <div class="cb">
         <div class="box">
           <div class="box-container left">
-            <p class="inside-box-left time">Friday</p>
-            <p class="inside-box-left num">07</p>
+            <p class="inside-box-left time"><%=day%></p>
+            <p class="inside-box-left num"><%=day_number%></p>
+            <p class="inside-box-left time"><%=month%></p>
             <hr style="width: 50%;">
-            <p class="inside-box-left time">14:00 - 14:15</p>
+            <p class="inside-box-left time"><%=time%></p>
           </div>
           <div class="box-container right">
             <p class="inside-box-right">Kumulo Place, The Breeze BSD</p>

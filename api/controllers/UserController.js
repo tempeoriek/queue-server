@@ -4,12 +4,14 @@ let User = require('../models/user'),
   key = require('../../config/key');
 
 UserController = {
-  checkUserVip: async function (email, password, is_vip) {
+  checkUserVip: async function (email, password, is_vip, ktp) {
+    console.log(`VIP AND MEMBER \n`);
+    let err;
     let find_user = await UserController.checkUserApi(email, password);
     return new Promise((resolve, reject) => {
       let obj = {
         user: null, 
-        other_date: false,
+        msg: null,
         err: null
       }, user = null;
     
@@ -20,31 +22,65 @@ UserController = {
           user = data[0]
         }
 
-        if (!user.data) {
-          obj.other_date = true
-        } else {
+        if (user) {
           if ((user.data.is_vip && is_vip) || (user.data.is_vip && !is_vip) || (!user.data.is_vip && !is_vip)) {
-            let [err, users] = await flatry(User.findOne({ email: user.data.email, is_delete: false}));
+            let users;
+            [err, users] = await flatry(User.findOne({ email: user.data.email, is_delete: false}));
             if (err) {
               console.log(`\nERROR:Error when find one in check user vip`);
               obj.err = err
               reject(obj); 
             }
-            if (users) {
+
+            if (users && users.ktp) {
               obj.user = {
                 _id: users._id,
                 email: users.email,
+                password: users.password,
                 first_name: users.first_name,
                 last_name: users.last_name,
                 phone: users.phone,
+                ktp: users.ktp,
                 is_vip: users.is_vip,
               }
-            } else {
+            } else if (users && !users.ktp) {
+              let find_ktp;
+              [err, find_ktp] = await flatry(User.find({ ktp, is_delete: false }));
+              if (err) {
+                console.log(`\nERROR:Error when find ktp in check user vip`);
+                obj.err = err
+                reject(obj);
+              }
+              
+              if (find_ktp.length > 0) {
+                obj.msg = `Sorry, you’re not eligible to book. Please check your ID Card.`
+              } else if (find_ktp.length === 0) {
+                let up_ktp;
+                [err, up_ktp] = await flatry(User.findOneAndUpdate({email, is_delete: false}, {ktp}));
+                console.log(up_ktp)
+                if (err) {
+                  console.log(`\nERROR:Error when find one and update ktp user \n ${err.stack}\n`);
+                  obj.err = err.stack;
+                  reject(obj);
+                }
+                obj.user = {
+                  _id: users._id,
+                  email: users.email,
+                  first_name: users.first_name,
+                  last_name: users.last_name,
+                  phone: users.phone,
+                  ktp,
+                  is_vip: users.is_vip,
+                } 
+              }
+            } else if (!users && !users.ktp) {
               let [err, new_user] = await flatry( User.create({
                 email: user.data.email,
+                password,
                 first_name: user.data.first_name,
                 last_name: user.data.last_name,
                 phone: user.data.phone,
+                ktp,
                 is_vip: user.data.is_vip,
               }) );
               if (err) {
@@ -55,8 +91,10 @@ UserController = {
               obj.user = new_user
             }
           } else if ( is_vip && !user.data.is_vip ) {
-            obj.other_date = true
+            obj.msg = `Sorry, you’re not eligible to book on the VIP day. Please book on the other days.`
           }
+        } else {
+          obj.msg = `Sorry, you’re not a VIP member or member of Eunoia.`
         }
         resolve(obj);
       })
@@ -70,28 +108,61 @@ UserController = {
     });
   },
 
-  checkUserGuest: async function (email, first_name, last_name, phone) {
+  checkUserGuest: async function (email, first_name, last_name, phone, ktp) {
     let obj = {
       new_user: null,
+      msg: null,
       user: null,
       err: null
     }
-    let err, find_user, new_user;
+    
+    let err, find_user, new_user, find_ktp;
     [err, find_user] = await flatry(User.findOne({ email, is_delete: false }));
     if (err) {
       console.log(`\nERROR:Error when findOne find_user \n ${err.stack}\n`);
       obj.err = err.stack
     }
 
-    if (!find_user) {
-      [err, new_user] = await flatry( User.create({ email, first_name, last_name, phone }) );
+    if (find_user && find_user.ktp) {
+      obj.user = find_user;
+    } else if (find_user && !find_user.ktp) {
+      let find_ktp;
+      [err, find_ktp] = await flatry(User.find({ ktp, is_delete: false }));
+      if (err) {
+        console.log(`\nERROR:Error when find ktp in check user vip`);
+        obj.err = err
+        reject(obj);
+      }
+
+      if (find_ktp.length > 0) {
+        obj.msg = `Sorry, you’re not eligible to book. Please check your ID Card.`
+      } else if (find_ktp.length === 0) {
+        let up_ktp;
+        [err, up_ktp] = await flatry(User.findOneAndUpdate({ email, is_delete: false }, { ktp }));
+        console.log(up_ktp)
+        if (err) {
+          console.log(`\nERROR:Error when find one and update ktp user \n ${err.stack}\n`);
+          obj.err = err.stack;
+          reject(obj);
+        }
+        obj.user = {
+          _id: find_user._id,
+          email: find_user.email,
+          first_name: find_user.first_name,
+          last_name: find_user.last_name,
+          phone: find_user.phone,
+          ktp,
+          is_vip: find_user.is_vip,
+        }
+      }
+    } else if (!find_user) {
+      [err, new_user] = await flatry(User.create({ email, first_name, last_name, phone, ktp }));
       if (err) {
         console.log(`\nERROR:Error when create new_user \n ${err.stack}\n`);
         obj.err = err.stack
+        reject(obj);
       }
       obj.new_user = new_user;
-    } else {
-      obj.user = find_user;
     }
 
     return obj;

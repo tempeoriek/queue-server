@@ -1,6 +1,10 @@
 let Schema = mongoose.Schema;
 
 let user_schema = new Schema({
+  ktp: {
+    type: String,
+    default: null
+  },
   first_name: {
     type: String,
     default: null
