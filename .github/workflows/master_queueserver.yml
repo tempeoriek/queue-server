@@ -31,5 +31,5 @@ jobs:
       with:
         app-name: 'queueserver'
         slot-name: 'production'
-        publish-profile: ${{ secrets.AzureAppService_PublishProfile_8730292904e144df8b6797ec4f3a9d12 }}
+        publish-profile: ${{ secrets.AzureAppService_PublishProfile_9ec5637606ef4f94a4493d93805b1606 }}
         package: .
