@@ -21,6 +21,7 @@ DayController = {
         id: day._id,
         day: name_day,
         date: moment(day.day).format(`D`),
+        days: moment(day.day).format(`DD MMM YYYY`),
         vip: day.is_vip,
         pressed: (day.is_vip == true) ? true : false,
         style: (day.is_vip == true) ? { backgroundColor: `black`, color: `white` } : { backgroundColor: `white`, color: `grey` }

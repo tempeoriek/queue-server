@@ -220,8 +220,31 @@ QueueController = {
         }
       });
     }
+  },
+
+  pickDay: async function (req, res) {
+    let obj = [];
+    let {day} = req.body, err, find_day;
+    [err, find_day] = await flatry(Queue.find({ day, is_delete: false })
+    .populate('day')
+    .populate('user')
+    .populate('time'))
+    if (err) {
+      console.log(`\nERROR:Error when find Queue \n ${err.stack}\n`);
+      return res.status(400).send(err);
+    }
+    find_day.forEach((data) => {
+      obj.push({
+        ID_Number: data.user.ktp,
+        name: `${data.user.first_name} ${data.user.last_name}`,
+        email: data.user.email,
+        queue: data.queue_number,
+        start: `${data.time.start_time}`,
+        end: `${data.time.end_time}`,
+      });
+    });
+    res.status(200).json({ queue: obj });
   }
 };
 
 module.exports = QueueController;
-

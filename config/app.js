@@ -8,6 +8,7 @@ mongoose = require('mongoose'),
 config = require('./database'),
 app = express();
 
+app.use(express.static('files'))
 app.use(morgan('combined'));
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
