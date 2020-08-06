@@ -108,8 +108,14 @@ QueueController = {
           console.log(`\nERROR:Error when check user \n ${create_queue.err.stack}\n`);
           return res.status(400).send(create_queue.err);
         }
-        res.status(200).json({ queue: create_queue.data });
 
+        let returns = {};
+        if (create_queue.msg) {
+          returns = { msg: create_queue.msg };
+        } else if (create_queue.data) {
+          returns = { queue: create_queue.data };
+        }
+        res.status(200).json(returns);
       } else if (check_user.user) {
         // FIND QUEUE
         [err, find_queue] = await flatry(Queue.find({ 
@@ -176,7 +182,7 @@ QueueController = {
       queue = await queue.populate('day').populate('time').execPopulate();
 
       //WAITING FOR 2 SECOND
-      await NotificationController.sleep(2000);
+      await NotificationController.sleep(2500);
 
       //FIND TOP 2 CREATED_AT SORT ASC
       let find_queue;
@@ -191,43 +197,46 @@ QueueController = {
           obj.data = data;
         }
       });
-
-      let filter_queue = { _id: obj.data._id },
-        update_queue = { status: `completed` },
-        filter_qty = { _id: time },
-        temp_qty = (obj.data) ? obj.data.time.qty - 1 : null;
-      let update_qty = { qty: temp_qty };
-
-      if (obj.data && temp_qty >= 0) {
-        //UPDATE QUEUE STATUS
-        [err] = await flatry(Queue.findOneAndUpdate(filter_queue, update_queue));
-        if (err) {
-          console.log(`\nERROR:Error when find one and update TIME \n ${err.stack}\n`);
-          obj.err = err.stack;
-        }
-
-        //UPDATE TIME QTY
-        [err] = await flatry(Time.findOneAndUpdate(filter_qty, update_qty));
-        if (err) {
-          console.log(`\nERROR:Error when find one and update TIME \n ${err.stack}\n`);
-          obj.err = err.stack;
-        }
-
-        //SEND EMAIL
-        let mail = {
-          from: emailConfig.email.from,
-          to: user.email,
-          usingTemplate: true,
-          path: `BookCompleted`,
-          localVariables: {
-            day: moment(queue.day.day).format(`dddd`),
-            day_number: moment(queue.day.day).format(`DD`),
-            month: moment(queue.day.day).format(`MMMM`),
-            time: `${queue.time.start_time} - ${queue.time.end_time}`,
-            queue_number: `${queue.queue_number}`
+      
+      if (obj.data) {
+        let filter_queue = { _id: obj.data._id },
+          update_queue = { status: `completed` },
+          filter_qty = { _id: time },
+          temp_qty = (obj.data) ? obj.data.time.qty - 1 : null;
+        let update_qty = { qty: temp_qty };
+        if (temp_qty < 0) {
+          obj.msg = `Sorry, slot is full`;
+        } else {
+          //UPDATE QUEUE STATUS
+          [err] = await flatry(Queue.findOneAndUpdate(filter_queue, update_queue));
+          if (err) {
+            console.log(`\nERROR:Error when find one and update TIME \n ${err.stack}\n`);
+            obj.err = err.stack;
           }
-        };
-        await NotificationController.sendEmail(mail);
+
+          //UPDATE TIME QTY
+          [err] = await flatry(Time.findOneAndUpdate(filter_qty, update_qty));
+          if (err) {
+            console.log(`\nERROR:Error when find one and update TIME \n ${err.stack}\n`);
+            obj.err = err.stack;
+          }
+
+          //SEND EMAIL
+          let mail = {
+            from: emailConfig.email.from,
+            to: user.email,
+            usingTemplate: true,
+            path: `BookCompleted`,
+            localVariables: {
+              day: moment(queue.day.day).format(`dddd`),
+              day_number: moment(queue.day.day).format(`DD`),
+              month: moment(queue.day.day).format(`MMMM`),
+              time: `${queue.time.start_time} - ${queue.time.end_time}`,
+              queue_number: `${queue.queue_number}`
+            }
+          };
+          await NotificationController.sendEmail(mail);
+        }
       } else {
         obj.msg = `Sorry, slot is full`;
       }

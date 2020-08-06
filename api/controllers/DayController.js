@@ -24,7 +24,8 @@ DayController = {
         days: moment(day.day).format(`DD MMM YYYY`),
         vip: day.is_vip,
         pressed: (day.is_vip == true) ? true : false,
-        style: (day.is_vip == true) ? { backgroundColor: `black`, color: `white` } : { backgroundColor: `white`, color: `grey` }
+        // style: (day.is_vip == true) ? { backgroundColor: `black`, color: `white` } : { backgroundColor: `white`, color: `grey` }
+        style: (day._id ==`5f140e8bae5c752d5c0b553e`) ? { backgroundColor: `black`, color: `white` } : { backgroundColor: `white`, color: `grey` }
       })
     });
     res.status(200).json({ day: obj });

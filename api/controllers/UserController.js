@@ -43,38 +43,35 @@ UserController = {
                 ktp: users.ktp,
                 is_vip: users.is_vip,
               }
-            } else if (users && users.ktp != ktp) {
-              obj.msg = `Sorry, you’re not eligible to book. Please check your ID Card.`
-            } else if (users && !users.ktp) {
+            }  else if (users && !users.ktp) {
               let validate_ktp = await UserController.validateKtp(ktp)
               if (validate_ktp.err) {
                 console.log(`\nERROR:Error when validate ktp in check user vip`);
                 obj.err = err
                 reject(obj);
               }
-
+              
               if (validate_ktp.msg) {
                 obj.msg = validate_ktp.msg;
               } else if (validate_ktp.data) {
                 let up_ktp;
                 [err, up_ktp] = await flatry(User.findOneAndUpdate({ email, is_delete: false }, { ktp }));
-                console.log(up_ktp)
                 if (err) {
                   console.log(`\nERROR:Error when find one and update ktp user \n ${err.stack}\n`);
                   obj.err = err.stack;
                   reject(obj);
                 }
                 obj.user = {
-                  _id: find_user._id,
-                  email: find_user.email,
-                  first_name: find_user.first_name,
-                  last_name: find_user.last_name,
-                  phone: find_user.phone,
+                  _id: up_ktp._id,
+                  email: up_ktp.email,
+                  first_name: up_ktp.first_name,
+                  last_name: up_ktp.last_name,
+                  phone: up_ktp.phone,
                   ktp,
-                  is_vip: find_user.is_vip,
+                  is_vip: up_ktp.is_vip,
                 }
               }
-            } else if (!users && !users.ktp) {
+            } else if (!users) {
               let validate_ktp = await UserController.validateKtp(ktp)
               if (validate_ktp.err) {
                 console.log(`\nERROR:Error when validate ktp in check user vip`);
@@ -101,6 +98,8 @@ UserController = {
                 }
                 obj.user = new_user
               }
+            } else {
+              obj.msg = `Sorry, you’re not eligible to book. Please check your ID Card.`
             }
           } else if ( is_vip && !user.data.is_vip ) {
             obj.msg = `Sorry, you’re not eligible to book on the VIP day. Please book on the other days.`
@@ -108,6 +107,7 @@ UserController = {
         } else {
           obj.msg = `Sorry, you’re not a VIP member or member of Eunoia.`
         }
+
         resolve(obj);
       })
       .catch(err => {
@@ -137,8 +137,6 @@ UserController = {
 
     if (find_user && find_user.ktp == ktp) {
       obj.user = find_user;
-    } else if (find_user && find_user.ktp != ktp) {
-      obj.msg = `Sorry, you’re not eligible to book. Please check your ID Card.`
     } else if (find_user && !find_user.ktp) {
       let validate_ktp = await UserController.validateKtp(ktp)
       if (validate_ktp.err) {
@@ -152,20 +150,19 @@ UserController = {
       } else if (validate_ktp.data) {
         let up_ktp;
         [err, up_ktp] = await flatry(User.findOneAndUpdate({ email, is_delete: false }, { ktp }));
-        console.log(up_ktp)
         if (err) {
           console.log(`\nERROR:Error when find one and update ktp user \n ${err.stack}\n`);
           obj.err = err.stack;
           reject(obj);
         }
         obj.user = {
-          _id: find_user._id,
-          email: find_user.email,
-          first_name: find_user.first_name,
-          last_name: find_user.last_name,
-          phone: find_user.phone,
+          _id: up_ktp._id,
+          email: up_ktp.email,
+          first_name: up_ktp.first_name,
+          last_name: up_ktp.last_name,
+          phone: up_ktp.phone,
           ktp,
-          is_vip: find_user.is_vip,
+          is_vip: up_ktp.is_vip,
         }
       }
     } else if (!find_user) {
@@ -187,6 +184,8 @@ UserController = {
         }
         obj.new_user = new_user;
       }
+    } else {
+      obj.msg = `Sorry, you’re not eligible to book. Please check your ID Card.`
     }
 
     return obj;
