@@ -37,7 +37,7 @@ QueueController = {
           }
 
           if (find_queue.length > 0) {
-            res.status(200).json({ msg: `Sorry, you’re not eligible to book. You already book for the day. Thank You.` });
+            res.status(200).json({ msg: `Sorry, you’re not eligible to book. Thank You.` });
           } else {
 
             let create_queue = await QueueController.createQueue(time, day, check_user.user, `vip`);
@@ -128,7 +128,7 @@ QueueController = {
         }
 
         if (find_queue.length > 0) {
-          res.status(200).json({ msg: `Sorry, you’re not eligible to book. You already book for the day. Thank You.` });
+          res.status(200).json({ msg: `Sorry, you’re not eligible to book. Thank You.` });
         } else {
           create_queue = await QueueController.createQueue(time, day, check_user.user, `guest`);
           if (create_queue.err) {
@@ -202,6 +202,7 @@ QueueController = {
         let filter_queue = { _id: obj.data._id },
           update_queue = { status: `completed` },
           filter_qty = { _id: time },
+          // CHANGE LOGIC = QTY - LENGTH OF QUEUE (STATUS COMPLETED)
           temp_qty = (obj.data) ? obj.data.time.qty - 1 : null;
         let update_qty = { qty: temp_qty };
         if (temp_qty < 0) {
@@ -304,6 +305,8 @@ QueueController = {
         end: `${data.time.end_time}`,
       });
     });
+    obj.sort((a, b) => (a.start > b.start) ? 1 : ((b.start > a.start) ? -1 : 0)); 
+
     res.status(200).json({ queue: obj });
   }
 };
