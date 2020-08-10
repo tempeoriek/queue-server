@@ -197,13 +197,12 @@ QueueController = {
           obj.data = data;
         }
       });
-      
       if (obj.data) {
         let filter_queue = { _id: obj.data._id },
           update_queue = { status: `completed` },
           filter_qty = { _id: time },
-          // CHANGE LOGIC = QTY - LENGTH OF QUEUE (STATUS COMPLETED)
-          temp_qty = (obj.data) ? obj.data.time.qty - 1 : null;
+          temp_qty = (obj.data) ? obj.data.time.slot - find_queue.length : null;
+          // temp_qty = (obj.data) ? obj.data.time.qty - 1 : null;
         let update_qty = { qty: temp_qty };
         if (temp_qty < 0) {
           obj.msg = `Sorry, slot is full`;
@@ -306,7 +305,7 @@ QueueController = {
       });
     });
     obj.sort((a, b) => (a.start > b.start) ? 1 : ((b.start > a.start) ? -1 : 0)); 
-
+  
     res.status(200).json({ queue: obj });
   }
 };

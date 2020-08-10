@@ -9,6 +9,10 @@ let time_schema = new Schema({
     type: String,
     default: null
   },
+  slot: {
+    type: Number,
+    default: null
+  },
   qty: {
     type: Number,
     default: null
