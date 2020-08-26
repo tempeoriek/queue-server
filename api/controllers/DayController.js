@@ -15,9 +15,9 @@ DayController = {
     });
 
     if (moment(temptoday).isSameOrAfter(date) === false) {
-      tommorrow = moment.utc().tz("Asia/Jakarta").format(`YYYY-MM-DDTHH:mm:ss.SSSZ`);
-    } else {
       tommorrow = moment.utc().tz("Asia/Jakarta").add(1, `days`).format(`YYYY-MM-DDTHH:mm:ss.SSSZ`);
+    } else {
+      tommorrow = moment.utc().tz("Asia/Jakarta").add(2, `days`).format(`YYYY-MM-DDTHH:mm:ss.SSSZ`);
     }
 
     let [err, days] = await flatry( Days.
