@@ -57,6 +57,47 @@ DayController = {
     });
     
     res.status(200).json({ day: obj });
+  },
+  fetchRecordAdmin: async function (req, res) {
+    let obj = [], today = moment.utc().tz("Asia/Jakarta").format(`YYYY-MM-DDTHH:mm:ss.SSSZ`);
+
+    let [err, days] = await flatry(Days.
+      find({ is_delete: false, day: { "$lte": new Date(today) } }).
+      sort({ day: 1 }).
+      limit(20));
+    if (err) {
+      console.log(`\nERROR:Error when find Day \n ${err.stack}\n`);
+      return res.status(400).send(err);
+    }
+
+    let temp_months = [], months;
+    days.forEach((day) => {
+      temp_months.push(moment(day.day).format(`MMMM`));
+      months = [...new Set(temp_months)];
+    });
+    let string_months = (months.length > 1) ? months.join(` - `) : months[0];
+
+    days.forEach((day) => {
+      let name_day = (moment(day.day).format(`dddd`) === `Friday`) ? `FRI` :
+        (moment(day.day).format(`dddd`) === `Saturday`) ? `SAT` :
+          (moment(day.day).format(`dddd`) === `Sunday`) ? `SUN` :
+            (moment(day.day).format(`dddd`) === `Monday`) ? `MON` :
+              (moment(day.day).format(`dddd`) === `Tuesday`) ? `TUE` :
+                (moment(day.day).format(`dddd`) === `Wednesday`) ? `WED` : `THU`
+
+      obj.push({
+        id: day._id,
+        day: name_day,
+        date: moment(day.day).format(`D`),
+        days: moment(day.day).format(`DD MMM YYYY`),
+        month: string_months.toUpperCase(),
+        vip: day.is_vip,
+        pressed: (day.is_vip == true) ? true : false,
+        style: (day._id == days[0]._id) ? { backgroundColor: `black`, color: `white` } : { backgroundColor: `white`, color: `grey` }
+      })
+    });
+
+    res.status(200).json({ day: obj });
   }
 };
 
