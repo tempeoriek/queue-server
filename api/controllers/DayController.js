@@ -15,7 +15,7 @@ DayController = {
     });
 
     if (moment(temptoday).isSameOrAfter(date) === false) {
-      tommorrow = moment.utc(obj).subtract(1, `days`).format(`YYYY-MM-DDTHH:mm:ss.SSSZ`);
+      tommorrow = moment.utc(obj).add(1, `days`).format(`YYYY-MM-DDTHH:mm:ss.SSSZ`);
     } else {
       tommorrow = moment.utc(obj).add(2, `days`).format(`YYYY-MM-DDTHH:mm:ss.SSSZ`);
     }
