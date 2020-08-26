@@ -11,6 +11,7 @@ module.exports = {
       port,
       secure,
       tls,
+      cc,
       auth: {
         user,
         pass

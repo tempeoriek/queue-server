@@ -99,12 +99,15 @@ UserController = {
                 obj.user = new_user
               }
             } else {
+              console.log(`Error KTP not match`);
               obj.msg = `Sorry, you’re not eligible to book. Please check your ID Card.`
             }
           } else if ( is_vip && !user.data.is_vip ) {
+            console.log(`Error User is non VIP member`);
             obj.msg = `Sorry, you’re not eligible to book on the VIP day. Please book on the other days.`
           }
         } else {
+          console.log(`Error User is non VIP member or member`);
           obj.msg = `Sorry, you’re not a VIP member or member of Eunoia.`
         }
 
@@ -185,6 +188,7 @@ UserController = {
         obj.new_user = new_user;
       }
     } else {
+      console.log(`Error KTP not match`);
       obj.msg = `Sorry, you’re not eligible to book. Please check your ID Card.`
     }
 
@@ -212,7 +216,7 @@ UserController = {
 
       axios({
         method: 'post',
-        baseURL: 'https://flitts-index.com/api/customer',
+        baseURL: 'https://devflitts.com/api/customer',
         headers: {
           'Accept': 'application/json',
           'Content-Type': 'application/json',
@@ -243,7 +247,8 @@ UserController = {
         resolve(obj);
       })
       .catch(function (error) {
-        console.log(`Error when axios API`);
+        console.log(`\nError when axios API in user controller`);
+        console.log(error.stack);
         obj.err = error;
         reject(obj)
       })
@@ -265,6 +270,7 @@ UserController = {
     }
 
     if (find_ktp.length > 0) {
+      console.log(`Error when check KTP`)
       obj.msg = `Sorry, you’re not eligible to book. Please check your ID Card.`
     } else if (find_ktp.length === 0) {
       obj.data = true;

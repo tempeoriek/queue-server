@@ -20,7 +20,7 @@ let time_schema = new Schema({
 
   day: {
     type: Schema.Types.ObjectId,
-    ref: `date`,
+    ref: `day`,
     default: null
   },
 

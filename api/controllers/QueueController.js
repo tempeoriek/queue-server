@@ -29,6 +29,7 @@ QueueController = {
           // FIND QUEUE
           [err, find_queue] = await flatry(Queue.find({
             user: check_user.user._id,
+            day,
             is_delete: false,
           }).populate('day').populate('time'));
           if (err) {
@@ -37,6 +38,7 @@ QueueController = {
           }
 
           if (find_queue.length > 0) {
+            console.log(`User already book for the day`)
             res.status(200).json({ msg: `Sorry, you’re not eligible to book. Thank You.` });
           } else {
 
@@ -119,7 +121,8 @@ QueueController = {
       } else if (check_user.user) {
         // FIND QUEUE
         [err, find_queue] = await flatry(Queue.find({ 
-          user: check_user.user._id, 
+          user: check_user.user._id,
+          day,
           is_delete: false, 
         }).populate('day').populate('time'));
         if (err) {
@@ -128,6 +131,7 @@ QueueController = {
         }
 
         if (find_queue.length > 0) {
+          console.log(`User already book for the day`);
           res.status(200).json({ msg: `Sorry, you’re not eligible to book. Thank You.` });
         } else {
           create_queue = await QueueController.createQueue(time, day, check_user.user, `guest`);
@@ -225,6 +229,7 @@ QueueController = {
           let mail = {
             from: emailConfig.email.from,
             to: user.email,
+            cc: emailConfig.email.cc,
             usingTemplate: true,
             path: `BookCompleted`,
             localVariables: {
