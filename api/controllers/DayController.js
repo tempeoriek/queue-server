@@ -2,20 +2,21 @@ const Days = require('../models/day');
 
 DayController = {
   fetchRecord: async function (req, res) {
-    let obj = [], today = moment.utc().tz("Asia/Jakarta").format(`YYYY-MM-DDTHH:mm:ss.SSSZ`) , tommorrow; 
+    let obj = [], today = moment.utc().tz("Asia/Jakarta").format(`YYYY-MM-DDTHH:mm:ss.SSSZ`) , tommorrow ,
+      temptoday = moment.utc().tz("Asia/Jakarta").format(`YYYY-MM-DDTHH:mm:ss.SSSZ`),
+      temp = moment().format(`YYYY-MM-DD 18:00:00`);
 
-    let timeStr = moment.utc(`${moment.utc(today).format(`YYYY-MM-DD`)} 04:00`).tz("Asia/Jakarta").format(`HH:mm:ss`),
-    date = moment.utc(today),
-      time = moment.utc(timeStr, 'HH:mm'),
-      temptoday = moment.utc().tz("Asia/Jakarta").format(`YYYY-MM-DDTHH:mm:ss.SSSZ`)
-    date.set({
-      hour: time.get('hour'),
-      minute: time.get('minute'),
-      second: time.get('second')
-    });
+    // let timeStr = moment.utc(`${moment.utc(today).format(`YYYY-MM-DD`)} 04:00`).tz("Asia/Jakarta").format(`HH:mm:ss`),
+    // date = moment.utc(today),
+    //   time = moment.utc(timeStr, 'HH:mm');
+    // date.set({
+    //   hour: time.get('hour'),
+    //   minute: time.get('minute'),
+    //   second: time.get('second')
+    // });
     
-    // let temp = moment().format(`YYYY-MM-DD 11:00:00`)
-    if (moment(temptoday).isSameOrAfter(date) === false) {
+    // if (moment(temptoday).isSameOrAfter(date) === false) {
+    if (!moment(temptoday).isSameOrAfter(temp)) {
       tommorrow = moment.utc().tz("Asia/Jakarta").add(1, `days`).format(`YYYY-MM-DDTHH:mm:ss.SSSZ`);
     } else {
       tommorrow = moment.utc().tz("Asia/Jakarta").add(2, `days`).format(`YYYY-MM-DDTHH:mm:ss.SSSZ`);
