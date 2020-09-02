@@ -4,8 +4,8 @@ DayController = {
   fetchRecord: async function (req, res) {
     let obj = [], today = moment.utc().tz("Asia/Jakarta").format(`YYYY-MM-DDTHH:mm:ss.SSSZ`) , tommorrow; 
 
-    let timeStr = moment.utc(`${moment.utc(today).format(`YYYY-MM-DD`)} 11:00`).tz("Asia/Jakarta").format(`HH:mm:ss`),
-      date = moment.utc(today),
+    let timeStr = moment.utc(`${moment.utc(today).format(`YYYY-MM-DD`)} 04:00`).tz("Asia/Jakarta").format(`HH:mm:ss`),
+    date = moment.utc(today),
       time = moment.utc(timeStr, 'HH:mm'),
       temptoday = moment.utc().tz("Asia/Jakarta").format(`YYYY-MM-DDTHH:mm:ss.SSSZ`)
     date.set({
@@ -13,7 +13,8 @@ DayController = {
       minute: time.get('minute'),
       second: time.get('second')
     });
-
+    
+    // let temp = moment().format(`YYYY-MM-DD 11:00:00`)
     if (moment(temptoday).isSameOrAfter(date) === false) {
       tommorrow = moment.utc().tz("Asia/Jakarta").add(1, `days`).format(`YYYY-MM-DDTHH:mm:ss.SSSZ`);
     } else {
@@ -56,15 +57,15 @@ DayController = {
       })
     });
     
-    res.status(200).json({ day: obj });
+    res.status(200).json({ day: obj, temptoday, date, tommorrow, test: moment(temptoday).isSameOrAfter(date) });
   },
   fetchRecordAdmin: async function (req, res) {
-    let obj = [], today = moment.utc().tz("Asia/Jakarta").format(`YYYY-MM-DDTHH:mm:ss.SSSZ`);
+    let obj = [], yesterday = moment.utc().tz("Asia/Jakarta").subtract(2, `days`).format(`YYYY-MM-DDTHH:mm:ss.SSSZ`);
 
     let [err, days] = await flatry(Days.
-      find({ is_delete: false, day: { "$lte": new Date(today) } }).
+      find({ is_delete: false, day: { "$gte": new Date(yesterday) } }).
       sort({ day: 1 }).
-      limit(20));
+      limit(8));
     if (err) {
       console.log(`\nERROR:Error when find Day \n ${err.stack}\n`);
       return res.status(400).send(err);
