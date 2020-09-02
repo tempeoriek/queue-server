@@ -4,7 +4,7 @@ DayController = {
   fetchRecord: async function (req, res) {
     let obj = [], today = moment.utc().tz("Asia/Jakarta").format(`YYYY-MM-DDTHH:mm:ss.SSSZ`) , tommorrow ,
       temptoday = moment.utc().tz("Asia/Jakarta").format(`YYYY-MM-DDTHH:mm:ss.SSSZ`),
-      date = moment().format(`YYYY-MM-DD 18:00:00`);
+      date = moment().add(1, `days`).format(`YYYY-MM-DD 18:00:00`);
 
     // let timeStr = moment.utc(`${moment.utc(today).format(`YYYY-MM-DD`)} 04:00`).tz("Asia/Jakarta").format(`HH:mm:ss`),
     // date = moment.utc(today),
