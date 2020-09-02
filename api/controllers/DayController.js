@@ -4,7 +4,7 @@ DayController = {
   fetchRecord: async function (req, res) {
     let obj = [], today = moment.utc().tz("Asia/Jakarta").format(`YYYY-MM-DDTHH:mm:ss.SSSZ`) , tommorrow ,
       temptoday = moment.utc().tz("Asia/Jakarta").format(`YYYY-MM-DDTHH:mm:ss.SSSZ`),
-      temp = moment().format(`YYYY-MM-DD 18:00:00`);
+      date = moment().format(`YYYY-MM-DD 18:00:00`);
 
     // let timeStr = moment.utc(`${moment.utc(today).format(`YYYY-MM-DD`)} 04:00`).tz("Asia/Jakarta").format(`HH:mm:ss`),
     // date = moment.utc(today),
@@ -15,8 +15,7 @@ DayController = {
     //   second: time.get('second')
     // });
     
-    // if (moment(temptoday).isSameOrAfter(date) === false) {
-    if (!moment(temptoday).isSameOrAfter(temp)) {
+    if (!moment(temptoday).isSameOrAfter(date)) {
       tommorrow = moment.utc().tz("Asia/Jakarta").add(1, `days`).format(`YYYY-MM-DDTHH:mm:ss.SSSZ`);
     } else {
       tommorrow = moment.utc().tz("Asia/Jakarta").add(2, `days`).format(`YYYY-MM-DDTHH:mm:ss.SSSZ`);
