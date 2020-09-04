@@ -2,7 +2,7 @@ const Days = require('../models/day');
 
 DayController = {
   fetchRecord: async function (req, res) {
-    let obj = [], today = moment.utc().tz("Asia/Jakarta").format(`YYYY-MM-DDTHH:mm:ss.SSSZ`) , tommorrow ,
+    let obj = [], today = moment.utc().tz("Asia/Jakarta").format(`HH`) , tommorrow ,
       temptoday = moment.utc().tz("Asia/Jakarta").format(`YYYY-MM-DDTHH:mm:ss.SSSZ`),
       date = moment().add(1, `days`).format(`YYYY-MM-DD 18:00:00`);
 
@@ -14,8 +14,7 @@ DayController = {
     //   minute: time.get('minute'),
     //   second: time.get('second')
     // });
-    
-    if (!moment(temptoday).isSameOrAfter(date)) {
+    if (!moment(temptoday).isSameOrAfter(date) || today < 18) {
       tommorrow = moment.utc().tz("Asia/Jakarta").add(1, `days`).format(`YYYY-MM-DDTHH:mm:ss.SSSZ`);
     } else {
       tommorrow = moment.utc().tz("Asia/Jakarta").add(2, `days`).format(`YYYY-MM-DDTHH:mm:ss.SSSZ`);
@@ -57,7 +56,7 @@ DayController = {
       })
     });
     
-    res.status(200).json({ day: obj, temptoday, date, tommorrow, test: moment(temptoday).isSameOrAfter(date) });
+    res.status(200).json({ day: obj, temptoday, date, tommorrow, test: today });
   },
   fetchRecordAdmin: async function (req, res) {
     let obj = [], yesterday = moment.utc().tz("Asia/Jakarta").subtract(2, `days`).format(`YYYY-MM-DDTHH:mm:ss.SSSZ`);
