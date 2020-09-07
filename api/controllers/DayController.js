@@ -14,7 +14,7 @@ DayController = {
     //   minute: time.get('minute'),
     //   second: time.get('second')
     // });
-    if (!moment(temptoday).isSameOrAfter(date) || today < 18) {
+    if (today < 18) {
       tommorrow = moment.utc().tz("Asia/Jakarta").add(1, `days`).format(`YYYY-MM-DDTHH:mm:ss.SSSZ`);
     } else {
       tommorrow = moment.utc().tz("Asia/Jakarta").add(2, `days`).format(`YYYY-MM-DDTHH:mm:ss.SSSZ`);
